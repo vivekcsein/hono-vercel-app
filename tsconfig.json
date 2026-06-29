@@ -6,7 +6,7 @@
   // ─────────────────────────────────────────────────────────────
   "compilerOptions": {
     // ── Target & Runtime Libs ──────────────────────────────────
-    "target": "ES2022",
+    "target": "ES2024",
     "lib": ["ES2022"], // Pure backend — NO DOM
     "module": "Preserve", // Let Bun/esbuild own the module format
     "moduleDetection": "force",
