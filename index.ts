@@ -1,5 +1,5 @@
 import type { Hono } from "hono";
-import createApp from "./src/app/app";
+import createApp from "./src/app/app.js";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type AppInstance = Hono;
