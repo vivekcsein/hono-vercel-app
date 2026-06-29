@@ -1,0 +1,6 @@
+# bunfig.toml
+
+telemetry = false
+
+[install]
+exact = false

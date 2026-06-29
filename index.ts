@@ -1,91 +1,100 @@
-import type { Hono } from "hono";
 import createApp from "@/app/main";
+import { envAppConfig as env } from "@/packages/env/app.env";
 
-// ── Types ──────────────────────────────────────────────────────────────────────
-type AppInstance = Hono;
+type AppInstance = ReturnType<typeof createApp>;
 
-// ── Singleton boot state ───────────────────────────────────────────────────────
-let _app: AppInstance | null = null;
-let _bootError: Error | null = null;
-let _booting: Promise<AppInstance> | null = null;
+let app: AppInstance | null = null;
+let bootstrapError: Error | null = null;
+let bootstrapPromise: Promise<AppInstance> | null = null;
 
-// ── Helpers ────────────────────────────────────────────────────────────────────
-const jsonResponse = (body: Record<string, unknown>, status: number): globalThis.Response => {
-  return new globalThis.Response(JSON.stringify(body), {
-    status,
-    headers: { "Content-Type": "application/json" },
-  });
+const jsonResponse = (body: Record<string, unknown>, status: number): Response => {
+	return new Response(JSON.stringify(body), {
+		status,
+		headers: {
+			"Content-Type": "application/json",
+		},
+	});
 };
 
-const isDev = (): boolean => process.env["NODE_ENV"] !== "production";
+const isDevelopment = (): boolean => {
+	return env.NODE_ENV !== "production";
+};
 
 const log = {
-  info: (msg: string): void => {
-    process.stdout.write(`[INFO] ${msg}\n`);
-  },
-  error: (msg: string): void => {
-    process.stderr.write(`[ERROR] ${msg}\n`);
-  },
+	info(message: string): void {
+		process.stdout.write(`[INFO] ${message}\n`);
+	},
+
+	error(message: string): void {
+		process.stderr.write(`[ERROR] ${message}\n`);
+	},
 };
 
-// ── Boot ───────────────────────────────────────────────────────────────────────
-const boot = (): Promise<AppInstance> => {
-  if (_booting) return _booting;
+const bootstrap = async (): Promise<AppInstance> => {
+	if (bootstrapPromise) {
+		return bootstrapPromise;
+	}
 
-  _booting = Promise.resolve()
-    .then(() => createApp())
-    .then((app) => {
-      _app = app;
-      _booting = null;
-      log.info("App booted successfully");
-      return app;
-    })
-    .catch((err: unknown) => {
-      _bootError = err instanceof Error ? err : new Error(String(err));
-      _booting = null;
-      log.error(`Fatal startup error: ${_bootError.message}`);
-      throw _bootError;
-    });
+	bootstrapPromise = Promise.resolve()
+		.then(() => {
+			const hono = createApp();
 
-  return _booting;
+			app = hono;
+
+			log.info("Application bootstrapped successfully.");
+
+			return hono;
+		})
+		.catch((error: unknown) => {
+			bootstrapError = error instanceof Error ? error : new Error("Unknown bootstrap error.");
+
+			log.error(bootstrapError.message);
+
+			throw bootstrapError;
+		})
+		.finally(() => {
+			bootstrapPromise = null;
+		});
+
+	return bootstrapPromise;
 };
 
-// ── Vercel handler ─────────────────────────────────────────────────────────────
 export default {
-  async fetch(req: globalThis.Request): Promise<globalThis.Response> {
-    // Warm path
-    if (_app) {
-      return _app.fetch(req);
-    }
+	async fetch(request: Request): Promise<Response> {
+		if (app) {
+			return app.fetch(request);
+		}
 
-    // Boot failure path
-    if (_bootError) {
-      log.error(`Rejecting request — app failed to boot: ${_bootError.message}`);
-      return jsonResponse(
-        {
-          status: "error",
-          message: "Service unavailable. Application failed to initialize.",
-          ...(isDev() && { detail: _bootError.message }),
-        },
-        503,
-      );
-    }
+		if (bootstrapError) {
+			return jsonResponse(
+				{
+					success: false,
+					message: "Application failed to initialize.",
+					...(isDevelopment() && {
+						error: bootstrapError.message,
+					}),
+				},
+				503,
+			);
+		}
 
-    // Cold start path
-    try {
-      const app = await boot();
-      return app.fetch(req);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Unknown boot error";
-      log.error(`Boot threw during cold start: ${message}`);
-      return jsonResponse(
-        {
-          status: "error",
-          message: "Service unavailable.",
-          ...(isDev() && { detail: message }),
-        },
-        503,
-      );
-    }
-  },
+		try {
+			const hono = await bootstrap();
+
+			return hono.fetch(request);
+		} catch (error: unknown) {
+			const message = error instanceof Error ? error.message : "Unknown bootstrap error.";
+
+			return jsonResponse(
+				{
+					success: false,
+					message: "Application unavailable.",
+					...(isDevelopment() && {
+						error: message,
+					}),
+				},
+				503,
+			);
+		}
+	},
 };

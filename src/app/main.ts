@@ -1,48 +1,40 @@
 import { Hono } from "hono";
-import { cors } from "hono/cors";
-import { logger } from "hono/logger";
-import { requestId } from "hono/request-id";
-import { secureHeaders } from "hono/secure-headers";
+
+import { registerMiddlewares } from "@/packages/bootstrap/middlewares.bootstrap";
+import { registerRoutes } from "@/packages/bootstrap/routes.bootstrap";
 
 const createApp = (): Hono => {
-  const app = new Hono();
+	const app = new Hono();
 
-  // ── Global middleware ──────────────────────────────────────────
-  app.use("*", requestId());
-  app.use("*", logger());
-  app.use("*", secureHeaders());
-  app.use(
-    "*",
-    cors({
-      origin: "*",
-      credentials: true,
-      allowMethods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      allowHeaders: ["Content-Type", "Authorization"],
-    }),
-  );
+	// Register application middleware
+	registerMiddlewares(app);
 
-  app.get("/", (c) => {
-    return c.text("Hello World!");
-  });
+	// Register application routes
+	registerRoutes(app);
 
-  app.get("/health", (c) => {
-    return c.json({ status: "ok" });
-  });
+	// Global error handler
+	app.onError((error, c) => {
+		return c.json(
+			{
+				success: false,
+				message: error.message,
+			},
+			500,
+		);
+	});
 
-  // ── Mount future routes here ───────────────────────────────────
-  // import usersRoute from '@app/api/users/route'
-  // app.route('/api/users', usersRoute)
+	// Not found handler
+	app.notFound((c) => {
+		return c.json(
+			{
+				success: false,
+				message: `Route "${c.req.path}" not found.`,
+			},
+			404,
+		);
+	});
 
-  // ── Error handler ──────────────────────────────────────────────
-  app.onError((err, c) => {
-    return c.json({ error: err.message }, 500);
-  });
-
-  app.notFound((c) => {
-    return c.json({ error: `Route ${c.req.path} not found` }, 404);
-  });
-
-  return app;
+	return app;
 };
 
 export default createApp;

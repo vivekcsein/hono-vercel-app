@@ -1,66 +1,65 @@
 {
-  // ─────────────────────────────────────────────────────────────
-  // @vivekcsein | Hono × Vercel × Bun Backend tsconfig
-  // Stack: Hono · Vercel Edge/Node · Bun · Zod · No React
-  // Fix: NodeNext → bundler moduleResolution (no .js extensions)
-  // ─────────────────────────────────────────────────────────────
-  "compilerOptions": {
-    // ── Target & Runtime Libs ──────────────────────────────────
-    "target": "ES2024",
-    "lib": ["ES2022"], // Pure backend — NO DOM
-    "module": "Preserve", // Let Bun/esbuild own the module format
-    "moduleDetection": "force",
-    "moduleResolution": "bundler", // FIX: no forced .js extensions, works with Bun + Vercel
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"display": "Hono Backend Starter",
 
-    // ── Emit ──────────────────────────────────────────────────
-    "outDir": "./dist",
-    "rootDir": "./",
-    "noEmit": false,
-    "sourceMap": true,
-    "declaration": true,
-    "declarationMap": true,
-    "incremental": true,
-    "tsBuildInfoFile": "./.tsbuildinfo",
+	"compilerOptions": {
+		// Language
+		"target": "ESNext",
+		"lib": ["ESNext", "DOM"],
 
-    // ── Module Interop ─────────────────────────────────────────
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true,
-    "allowJs": false,
-    "verbatimModuleSyntax": true, // Still enforces `import type` — tree-shaking safe
-    "isolatedModules": true,
-    "rewriteRelativeImportExtensions": true,
-    "allowImportingTsExtensions": true, // import './foo.ts' works in Bun natively
+		// Modules
+		"module": "Preserve",
+		"moduleResolution": "Bundler",
+		"moduleDetection": "force",
+		"verbatimModuleSyntax": true,
+		"isolatedModules": true,
 
-    // ── Strict Type Safety ─────────────────────────────────────
-    "strict": true,
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "exactOptionalPropertyTypes": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "useUnknownInCatchVariables": true,
-    "skipLibCheck": true,
+		// Strictness
+		"strict": true,
+		"noUncheckedIndexedAccess": true,
+		"exactOptionalPropertyTypes": true,
+		"noImplicitOverride": true,
+		"noFallthroughCasesInSwitch": true,
+		"noPropertyAccessFromIndexSignature": true,
 
-    // ── Disabled (ESLint owns these) ───────────────────────────
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "noPropertyAccessFromIndexSignature": false,
+		// JavaScript
+		"allowJs": false,
+		"checkJs": false,
 
-    // ── Type Roots ─────────────────────────────────────────────
-    "types": ["node", "bun-types"],
+		// Emit
+		"noEmit": true,
 
-    // ── Path Aliases ───────────────────────────────────────────
-    "paths": {
-      "@/*": ["./src/*"],
-      "@packages/*": ["./src/packages/*"],
-      "@types/*": ["./src/types/*"]
-    }
-  },
+		// Interop
+		"esModuleInterop": true,
+		"allowSyntheticDefaultImports": true,
+		"resolveJsonModule": true,
 
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "index.ts"], // Ambient type declarations
+		// Project
+		"paths": {
+			"@/*": ["./src/*"],
+			"~/*": ["./tests/*"],
+			"@/components/*": ["./src/components/*"],
+			"@/types/*": ["./src/types/*"],
+			"@/packages/*": ["./src/packages/*"]
+		},
 
-  "exclude": ["node_modules", "dist", ".vercel", "coverage", "**/*.test.ts", "**/*.spec.ts"]
+		// Types
+		"types": ["bun"],
+
+		// Performance
+		"skipLibCheck": true,
+
+		// Consistency
+		"forceConsistentCasingInFileNames": true,
+
+		// Editor
+		"useDefineForClassFields": true,
+
+		// Source Maps
+		"sourceMap": true
+	},
+
+	"include": ["index.ts", "src/**/*.ts", "src/**/*.tsx", "tests/**/*.ts"],
+
+	"exclude": ["node_modules", "dist", ".vercel", "coverage"]
 }

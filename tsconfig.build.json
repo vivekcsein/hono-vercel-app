@@ -1,16 +1,16 @@
 {
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "module": "ES2022", // ← must be NodeNext
-    "moduleResolution": "bundler", // ← must be NodeNext
-    // These two flags are REMOVED — they block emitting ESM
-    "allowImportingTsExtensions": false,
-    "rewriteRelativeImportExtensions": false,
+	"$schema": "https://json.schemastore.org/tsconfig",
 
-    "noEmit": false, // now tsc actually writes files
-    "outDir": "./dist",
-    "rootDir": "./" // ✅ keep root as ./ since index.ts lives here
-  },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "index.ts"],
-  "exclude": ["node_modules", "dist", "coverage", "**/*.test.ts", "**/*.spec.ts"]
+	"extends": "./tsconfig.json",
+
+	"compilerOptions": {
+		"noEmit": false,
+		"declaration": true,
+		"declarationMap": true,
+		"emitDeclarationOnly": true
+	},
+
+	"include": ["index.ts", "src/**/*.ts", "src/**/*.tsx"],
+
+	"exclude": ["tests", "**/*.test.ts", "**/*.spec.ts", "**/__tests__/**"]
 }
