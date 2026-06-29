@@ -1,8 +1,12 @@
 import base from "./vite.base";
 import { mergeConfig } from "vite";
 import { manualChunks } from "./chunks";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default mergeConfig(base as unknown as Record<string, unknown>, {
+  plugins: [
+    tsconfigPaths(),
+  ],
   build: {
     target: "node22",
 
