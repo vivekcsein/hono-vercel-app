@@ -1,14 +1,16 @@
 {
-  "extends": "./tsconfig.json", // inherits everything above
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    // These two flags are REMOVED — they block emit
+    "module": "ES2022",
+    "moduleResolution": "bundler",
+    // These two flags are REMOVED — they block emitting ESM
     "allowImportingTsExtensions": false,
     "rewriteRelativeImportExtensions": false,
 
     "noEmit": false, // now tsc actually writes files
     "outDir": "./dist",
-    "rootDir": "./"
+    "rootDir": "./" // ✅ keep root as ./ since index.ts lives here
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "index.ts"], // Ambient type declarations
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "index.ts"],
   "exclude": ["node_modules", "dist", "coverage", "**/*.test.ts", "**/*.spec.ts"]
 }

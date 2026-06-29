@@ -5,9 +5,13 @@
   "type": "module",
   "private": true,
   "scripts": {
+    "dev": "bun run --watch index.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "build": "rimraf dist && rimraf .tsbuildinfo && tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json && tsc-esm-fix --target='dist'",
-    "start": "bun run dist/index.js",
+    "clean": "rimraf dist && rimraf .tsbuildinfo",
+    "compile": "tsc -p tsconfig.build.json",
+    "postcompile": "tsc-alias -p tsconfig.build.json --outDir dist && tsc-esm-fix --tsconfig=tsconfig.build.json",
+    "build": "bun run clean && bun run compile",
+    "start": "node dist/index.js",
     "lint": "eslint . --ext .ts,.tsx",
     "format": "prettier --write ."
   },
