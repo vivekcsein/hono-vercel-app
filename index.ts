@@ -1,5 +1,5 @@
 import type { Hono } from "hono";
-import createApp from "@/app/app";
+import createApp from "@/app/main";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type AppInstance = Hono;
