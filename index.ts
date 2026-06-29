@@ -1,6 +1,6 @@
 import { Hono } from "hono";
 
-import { registerApp } from "@/app/main";
+import { registerApp } from "./src/app/main";
 
 const app = new Hono();
 
