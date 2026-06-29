@@ -1,8 +1,8 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "module": "ES2022",
-    "moduleResolution": "bundler",
+    "module": "ES2022", // ← must be NodeNext
+    "moduleResolution": "bundler", // ← must be NodeNext
     // These two flags are REMOVED — they block emitting ESM
     "allowImportingTsExtensions": false,
     "rewriteRelativeImportExtensions": false,

@@ -6,12 +6,12 @@
   // ─────────────────────────────────────────────────────────────
   "compilerOptions": {
     // ── Target & Runtime Libs ──────────────────────────────────
-    "target": "ESNext",
-    "lib": ["ESNext"], // Pure backend — NO DOM
+    "target": "ES2022",
+    "lib": ["ES2022"], // Pure backend — NO DOM
     "module": "Preserve", // Let Bun/esbuild own the module format
     "moduleDetection": "force",
     "moduleResolution": "bundler", // FIX: no forced .js extensions, works with Bun + Vercel
-    
+
     // ── Emit ──────────────────────────────────────────────────
     "outDir": "./dist",
     "rootDir": "./",
