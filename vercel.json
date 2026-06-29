@@ -1,8 +1,9 @@
 {
+	"buildCommand": "bun run build",
 	"rewrites": [
 		{
 			"source": "/(.*)",
-			"destination": "/index.ts"
+			"destination": "/dist/index.js"
 		}
 	]
 }
